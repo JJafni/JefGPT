@@ -10,27 +10,36 @@ const client = new Client({
   ],
 });
 
-const token = process.env.DISCORD_TOKEN;
+const token = process.env.DISCORD_BOT_TOKEN;
+
+// Import your fruits data module
+const fruits = require('./data');
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
 client.on('messageCreate', async (message) => {
-  if (message.author.bot) return;
+  if (message.author.bot) return; // Ignore messages from other bots
 
   if (message.content.toLowerCase() === '!ping') {
     message.reply('Pong!');
-  } else if (message.content.toLowerCase() === '!joke') {
-    // Make an API call to get a Chuck Norris joke
+  }
+
+  if (message.content.toLowerCase() === '!fruits') {
     try {
-      const response = await axios.get('https://api.chucknorris.io/jokes/random');
-      message.reply(response.data.value);
+      // Use the imported fruits data directly
+      const fruitNames = fruits.map(fruit => fruit.name).join(', ');
+
+      // Send the list of fruits to the Discord channel
+      message.reply(`Here are some fruits: ${fruitNames}`);
     } catch (error) {
-      console.error('Error fetching Chuck Norris joke:', error.message);
-      message.reply('Sorry, I couldn\'t fetch a joke at the moment.');
+      console.error('Error fetching fruits from data module:', error);
+      message.reply('Error fetching fruits from data module.');
     }
   }
+
+  // Your bot logic here
 });
 
 client.login(token);
